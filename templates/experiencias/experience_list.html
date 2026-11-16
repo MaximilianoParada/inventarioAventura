@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Experiencias - Aventuras del Sur{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">{% if is_administrator %}Todas las experiencias{% else %}Mis experiencias{% endif %}</h1>
+    <a class="btn btn-primary" href="{% url 'experience_create' %}">
+        <i class="fas fa-plus fa-sm text-white-50"></i> Crear experiencia
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered data-table" width="100%">
+                <thead>
+                    <tr>
+                        <th>Título</th><th>Categoría</th><th>Autor</th><th>Fecha</th>
+                        <th>Precio</th><th>Cupos libres</th><th>Estado</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for experience in experiences %}
+                    <tr>
+                        <td>{{ experience.title }}</td>
+                        <td>{{ experience.category.name }}</td>
+                        <td>{{ experience.creator.username }}</td>
+                        <td>{{ experience.scheduled_at|date:"d/m/Y H:i" }}</td>
+                        <td>${{ experience.price }}</td>
+                        <td>{{ experience.available_places }} / {{ experience.capacity }}</td>
+                        <td>{% if experience.is_active %}<span class="badge badge-success">Activa</span>{% else %}<span class="badge badge-secondary">Inactiva</span>{% endif %}</td>
+                        <td class="text-nowrap">
+                            <a class="btn btn-warning btn-sm" href="{% url 'experience_update' experience.pk %}">Editar</a>
+                            {% if is_administrator %}
+                            <a class="btn btn-danger btn-sm" href="{% url 'experience_delete' experience.pk %}">Eliminar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not experiences %}
+            <p class="text-center text-muted mb-0">Aún no hay experiencias registradas.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel - Aventuras del Sur{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Panel principal</h1>
+        <p class="mb-0 text-gray-600">Bienvenido, {{ user.first_name|default:user.username }}.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <span class="font-weight-bold text-primary">Roles asignados: </span>
+                {% for role in roles %}
+                    <span class="badge badge-primary">{{ role }}</span>
+                {% empty %}
+                    <span class="text-muted">Sin roles asignados</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% if is_administrator %}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Administrador</div>
+                <div class="text-gray-800 mb-3">Gestiona usuarios, categorías, todas las experiencias y todas las reservas.</div>
+                <a class="btn btn-primary btn-sm" href="{% url 'user_list' %}">Gestionar usuarios</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if is_guide_operator %}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Guía / Operador</div>
+                <div class="text-gray-800 mb-3">Administra tus experiencias. No puedes eliminar registros ni gestionar categorías.</div>
+                <a class="btn btn-success btn-sm" href="{% url 'experience_list' %}">Mis experiencias</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if is_tourist_client %}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Turista / Cliente</div>
+                <div class="text-gray-800 mb-3">Explora el catálogo, inscríbete y consulta tus reservas personales.</div>
+                <a class="btn btn-info btn-sm text-white" href="{% url 'catalog' %}">Ver catálogo</a>
+                <a class="btn btn-outline-info btn-sm" href="{% url 'reservation_list' %}">Mis reservas</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if not is_administrator and not is_guide_operator and not is_tourist_client %}
+<div class="alert alert-warning" role="alert">
+    No tienes un rol asignado. Contacta al administrador del sistema.
+</div>
+{% endif %}
+{% endblock %}

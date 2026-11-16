@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Aventuras del Sur{% endblock %}
+
+{% block content %}
+<div class="jumbotron shadow-sm">
+    <h1 class="display-4">Aventuras del Sur</h1>
+    <p class="lead">Descubre experiencias al aire libre en nuestro ecoparque y reserva natural.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'catalog' %}">Explorar experiencias</a>
+</div>
+
+<div class="row">
+    {% for experience in experiences %}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">{{ experience.category.name }}</div>
+                <h2 class="h5 font-weight-bold">{{ experience.title }}</h2>
+                <p class="text-gray-700">{{ experience.description|truncatewords:24 }}</p>
+                <p class="mb-1"><strong>Precio:</strong> ${{ experience.price }}</p>
+                <p class="mb-0"><strong>Fecha:</strong> {{ experience.scheduled_at|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">Pronto publicaremos nuevas experiencias.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

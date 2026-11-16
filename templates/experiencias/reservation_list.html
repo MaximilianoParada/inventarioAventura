@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservas - Aventuras del Sur{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">{% if is_administrator %}Todas las reservas{% else %}Mis reservas{% endif %}</h1>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered data-table" width="100%">
+                <thead><tr><th>Experiencia</th><th>Turista</th><th>Fecha</th><th>Inscrita</th><th>Pago</th>{% if is_administrator %}<th>Actualizar pago</th>{% endif %}</tr></thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.experience.title }}</td>
+                        <td>{{ reservation.user.username }}</td>
+                        <td>{{ reservation.experience.scheduled_at|date:"d/m/Y H:i" }}</td>
+                        <td>{{ reservation.reserved_at|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if reservation.payment_status == 'confirmed' %}
+                                <span class="badge badge-success">{{ reservation.get_payment_status_display }}</span>
+                            {% else %}
+                                <span class="badge badge-warning">{{ reservation.get_payment_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        {% if is_administrator %}
+                        <td>
+                            <form method="post" action="{% url 'reservation_status_update' reservation.pk %}" class="form-inline">
+                                {% csrf_token %}
+                                <select class="form-control form-control-sm mr-2" name="payment_status">
+                                    {% for value, label in reservation.PAYMENT_CHOICES %}
+                                    <option value="{{ value }}" {% if reservation.payment_status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-primary btn-sm" type="submit">Guardar</button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not reservations %}
+            <p class="text-center text-muted mb-0">No hay reservas registradas.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

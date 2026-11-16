@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Aventuras del Sur{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        {% if user.is_authenticated %}
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
+                <div class="sidebar-brand-icon"><i class="fas fa-mountain"></i></div>
+                <div class="sidebar-brand-text mx-2">Aventuras del Sur</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'catalog' %}">
+                    <i class="fas fa-fw fa-compass"></i><span>Catálogo</span>
+                </a>
+            </li>
+            {% if is_guide_operator %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'experience_list' %}">
+                    <i class="fas fa-fw fa-hiking"></i><span>Experiencias</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if is_tourist_client %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'reservation_list' %}">
+                    <i class="fas fa-fw fa-ticket-alt"></i><span>Mis reservas</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if is_administrator %}
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">Administración</div>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'category_list' %}">
+                    <i class="fas fa-fw fa-tags"></i><span>Categorías</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_list' %}">
+                    <i class="fas fa-fw fa-users"></i><span>Usuarios</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'reservation_list' %}">
+                    <i class="fas fa-fw fa-clipboard-list"></i><span>Todas las reservas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'experience_list' %}">
+                    <i class="fas fa-fw fa-mountain"></i><span>Todas las experiencias</span>
+                </a>
+            </li>
+            {% if user.is_staff %}
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/">
+                    <i class="fas fa-fw fa-cog"></i><span>Administración Django</span>
+                </a>
+            </li>
+            {% endif %}
+            {% endif %}
+            <hr class="sidebar-divider d-none d-md-block">
+        </ul>
+        {% endif %}
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <a class="navbar-brand {% if user.is_authenticated %}d-md-none{% endif %}" href="{% url 'home' %}">Aventuras del Sur</a>
+                    <ul class="navbar-nav ml-auto">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item d-flex align-items-center mr-3">
+                            <span class="text-gray-700">{{ user.get_full_name|default:user.username }}</span>
+                        </li>
+                        <li class="nav-item d-flex align-items-center">
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-link text-gray-600" type="submit">Cerrar sesión</button>
+                            </form>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/js/sb-admin-2.min.js"></script>
+    <script>
+        $(function () {
+            $('.data-table').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
+                },
+                pageLength: 10,
+                order: []
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Categorías - Aventuras del Sur{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Categorías</h1>
+    <a class="btn btn-primary" href="{% url 'category_create' %}"><i class="fas fa-plus fa-sm"></i> Crear categoría</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered data-table" width="100%">
+                <thead><tr><th>Nombre</th><th>Descripción</th><th>Experiencias</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <td>{{ category.name }}</td>
+                        <td>{{ category.description|default:"—"|truncatewords:20 }}</td>
+                        <td>{{ category.experience_count }}</td>
+                        <td>{% if category.is_active %}<span class="badge badge-success">Activa</span>{% else %}<span class="badge badge-secondary">Inactiva</span>{% endif %}</td>
+                        <td class="text-nowrap">
+                            <a class="btn btn-warning btn-sm" href="{% url 'category_update' category.pk %}">Editar</a>
+                            <a class="btn btn-danger btn-sm" href="{% url 'category_delete' category.pk %}">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not categories %}
+            <p class="text-center text-muted mb-0">No hay categorías registradas.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

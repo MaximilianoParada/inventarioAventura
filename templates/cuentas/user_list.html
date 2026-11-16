@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Usuarios - Aventuras del Sur{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Usuarios</h1>
+    <a class="btn btn-primary" href="{% url 'user_create' %}"><i class="fas fa-user-plus fa-sm"></i> Crear usuario</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered data-table" width="100%">
+                <thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                    {% for account in users %}
+                    <tr>
+                        <td>{{ account.username }}</td>
+                        <td>{{ account.get_full_name|default:"—" }}</td>
+                        <td>{{ account.email|default:"—" }}</td>
+                        <td>
+                            {% for assignment in account.userrole_set.all %}
+                                <span class="badge badge-primary">{{ assignment.role.role_name }}</span>
+                            {% empty %}
+                                <span class="text-muted">Sin rol</span>
+                            {% endfor %}
+                        </td>
+                        <td>{% if account.is_active %}<span class="badge badge-success">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}</td>
+                        <td><a class="btn btn-warning btn-sm" href="{% url 'user_update' account.pk %}">Editar</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not users %}
+            <p class="text-center text-muted mb-0">No hay usuarios registrados.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
